@@ -2,12 +2,40 @@
 <html>
 <head>
     <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script src="./howler.js"></script>
+    <script src="./underscore-min.js"></script>
     <script src="http://js.leapmotion.com/leap-0.6.4.js"></script>
     <script src="http://js.leapmotion.com/leap-plugins-0.1.10.js"></script>
-    <script src="./leaptrainer.js"></script>
+    <script src="./setupSpeech.js"></script>
+    <script src="./dj_listeners.js"></script>
     <link rel="stylesheet" type="text/css" src="./style.css">
 </head>
 <body>
-<script type="text/javascript" src="./test.js"></script>
+<script type="text/javascript">
+
+var ctx = new window.AudioContext(),
+// TODO: decide a good tuning parameter
+    debouncedCircleListener = _.debounce(circleListener, 1000),
+    debouncedSwipeListener = _.debounce(swipeListener, 1000),
+    song;
+var controller = Leap.loop({enableGestures: true}, function(frame){
+  if(frame.valid && frame.gestures.length > 0){
+    frame.gestures.forEach(function(gesture){
+        console.log("frame was valid");
+        switch (gesture.type){
+          case "circle":
+              console.log("Circle Gesture");
+              console.log(gesture.normal);
+              debouncedCircleListener(gesture);
+              break;
+          case "swipe":
+              swipeListener(gesture);
+              break;
+        }
+    });
+  }
+});
+
+</script>
 </body>
 </html>
