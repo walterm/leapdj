@@ -1,9 +1,7 @@
-var processSpeech = function(transcript) {
-  console.log("here1");
+var isPlaying = false;
+var processSpeech = function(transcript, sound) {
   // Helper function to detect if any commands appear in a string
   var userSaid = function(str, commands) {
-    console.log("TARGET", str);
-    console.log("transcript", commands);
     if (str === "") {
       return false;
     }
@@ -11,6 +9,7 @@ var processSpeech = function(transcript) {
     for (var i = 0; i < commands.length; i++) {
       if(commands[i] !== ""){
         if (str.indexOf(commands[i]) > -1){
+            console.log("transcript", transcript);
             console.log("FOUND");
             return true;
         }
