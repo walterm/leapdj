@@ -13,28 +13,77 @@
 </head>
 <body>
 
+<div class="container">
+    <div class="songInfo">
+        <span>Current Song</span>
+        <span class="position"></span>
+    </div>
+    <div class="volume">
+        <!-- TODO: jQuery slider  -->
+    </div>
+    <div class="cd">
+        <img src="./cd.png" height="300" width="300">
+    </div>
+    <div class="trackListing">
+        <ul>
+            <li>Q.U.E.E.N - Janellé Monae</li>
+            <li>Titanium - David Guetta + Sia</li>
+            <li>Young And Beautiful - Lana Del Ray</li>
+            <li>Bad Kids - The Black Lips</li>
+            <li>Stay - Rihanna</li>
+        </ul>
+    </div>
+</div>
 
 
 <script type="text/javascript">
 
-var ctx = new window.AudioContext(),
-// TODO: decide a good tuning parameter
-    debouncedCircleListener = _.debounce(circleListener, 1000),
+ // TODO: decide a good tuning parameter for debounced versions
+var debouncedCircleListener = _.debounce(circleListener, 1000),
     debouncedSwipeListener = _.debounce(swipeListener, 1000),
-    song;
+    debouncedProcessSpeech = _.debounce(processSpeech, 500),
+    sound = new Howl({ urls: ['finalProject/sounds/queen.mp3']}),
+    song = "queen";
+
+// SPEECH
+var recognition = new webkitSpeechRecognition();
+recognition.continuous = true;
+recognition.interimResults = true;
+recognition.onresult = function (event) {
+    var transcript = '',
+        hasFinal = false;
+
+    for (var i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          hasFinal = true;
+        } else
+          transcript += event.results[i][0].transcript;
+        }
+
+    var processed = debouncedProcessSpeech(transcript, sound);
+
+    if (processed) {
+        recognition.stop();
+    }
+}
+
+recognition.onend = function(event) {
+  setTimeout(function() { recognition.start(); }, 1000);
+};
+recognition.start();
+
 var controller = Leap.loop({enableGestures: true}, function(frame){
   if(frame.valid && frame.gestures.length > 0){
     frame.gestures.forEach(function(gesture){
-        console.log("frame was valid");
         switch (gesture.type){
           case "circle":
-              console.log("Circle Gesture");
-              console.log(gesture.normal);
-              debouncedCircleListener(gesture);
-              break;
+            console.log("Circle Gesture");
+            debouncedCircleListener(gesture);
+            break;
           case "swipe":
-              swipeListener(gesture);
-              break;
+            console.log("Swipe Gesture");
+            debouncedSwipeListener(gesture);
+            break;
         }
     });
   }
