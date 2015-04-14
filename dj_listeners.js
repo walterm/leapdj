@@ -33,19 +33,19 @@ function getSongLength (song) {
         "stay": 241000000,
         "youngAndBeautiful": 256000000
     };
-
     return songMap[song];
 }
 
 function circleListener (gesture) {
-    var delta = gesture.duration / getSongLength(song),
-        orientation = gesture.normal[1] > 0 ? -1 : 1;
+    var songLength = getSongLength(song),
+        progress = gesture.progress,
+        orientation = gesture.normal[1] > 0 ? -1 : 1,
+        start = sound.pos(),
+        delta;
 
-    delta = delta * orientation;
-     // converting back to seconds
-    delta = delta / 1000000;
-    delta = Math.floor(delta);
-    var start = sound.pos();
+    // TODO: define this parameter
+    delta = Math.min(progress * 5 * orientation, songLength);
+    sound.pause();
     sound.play(function (id) {
         sound.pos(start + delta, id);
     });
