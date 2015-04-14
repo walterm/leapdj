@@ -55,15 +55,20 @@ var processSpeech = function(transcript, sound) {
       processed = true;
   }
   else if (userSaid("play", transcript.split(" "))) {
-      sound.play();
+      if (!isPlaying) {
+        sound.play();
+        isPlaying = true;
+      }
       processed = true;
   }
   else if (userSaid("paws", transcript.split(" "))) {
       sound.pause();
+      isPlaying = false;
       processed = true;
   }
   else if (userSaid("stop", transcript.split(" "))) {
       sound.stop();
+      isPlaying = fales;
       processed = true;
   }
 
