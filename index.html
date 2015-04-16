@@ -86,8 +86,7 @@
     var debouncedCircleListener = _.debounce(circleListener, 1000),
         debouncedSwipeListener = _.debounce(swipeListener, 1000),
         debouncedProcessSpeech = _.debounce(processSpeech, 500),
-        sound = new Howl({ urls: ['finalProject/sounds/queen.mp3']}),
-        song = "queen";
+        song, sound;
 
     // SPEECH RECOGNITION LOGIC
     var recognition = new webkitSpeechRecognition();
@@ -104,8 +103,18 @@
               transcript += event.results[i][0].transcript;
             }
 
-        var processed = debouncedProcessSpeech(transcript, sound);
+        var result = debouncedProcessSpeech(transcript, sound);
+        var processed;
+        if(result === undefined){
+            processed = false;
+            sound = undefined;
 
+        }else {
+            processed = result.processed;
+            sound = result.sound || undefined;
+        }
+        
+        console.log(processed);
         if (processed) {
             recognition.stop();
         }

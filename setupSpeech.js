@@ -68,9 +68,11 @@ var processSpeech = function(transcript, sound) {
   }
   else if (userSaid("stop", transcript.split(" "))) {
       sound.stop();
-      isPlaying = fales;
+      isPlaying = false;
       processed = true;
   }
 
-  return processed;
+  result = {processed: processed,
+            sound: sound}
+  return result;
 };
