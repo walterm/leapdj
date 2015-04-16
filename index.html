@@ -1,94 +1,156 @@
+
 <!DOCTYPE html>
-<html>
+
 <head>
-    <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
-    <script src="./howler.js"></script>
-    <script src="./underscore-min.js"></script>
+    <title>Virtual DJ</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="http://ironsummitmedia.github.io/startbootstrap-simple-sidebar/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="http://ironsummitmedia.github.io/startbootstrap-simple-sidebar/css/simple-sidebar.css" rel="stylesheet">
     <script src="http://js.leapmotion.com/leap-0.6.4.js"></script>
     <script src="http://js.leapmotion.com/leap-plugins-0.1.10.js"></script>
+    <script src="./howler.js"></script>
+    <script src="./underscore-min.js"></script>
     <script src="./setupSpeech.js"></script>
     <script src="./dj_listeners.js"></script>
-    <link rel="stylesheet" type="text/css" src="./style.css">
-    <link rel="stylesheet" type="text/css" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 </head>
+
 <body>
 
-<div class="container">
-    <div class="songInfo">
-        <span>Current Song</span>
-        <span class="position"></span>
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="#">
+                        Start Bootstrap
+                    </a>
+                </li>
+                <li>
+                    <a href="#">Dashboard</a>
+                </li>
+                <li>
+                    <a href="#">Shortcuts</a>
+                </li>
+                <li>
+                    <a href="#">Overview</a>
+                </li>
+                <li>
+                    <a href="#">Events</a>
+                </li>
+                <li>
+                    <a href="#">About</a>
+                </li>
+                <li>
+                    <a href="#">Services</a>
+                </li>
+                <li>
+                    <a href="#">Contact</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1>Simple Sidebar</h1>
+                        <p>This template has a responsive menu toggling system. The menu will appear collapsed on smaller screens, and will appear non-collapsed on larger screens. When toggled using the button below, the menu will appear/disappear. On small screens, the page content will be pushed off canvas.</p>
+                        <p>Make sure to keep all page content within the <code>#page-content-wrapper</code>.</p>
+                        <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">Toggle Menu</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+
     </div>
-    <div class="volume">
-        <!-- TODO: jQuery slider  -->
-    </div>
-    <div class="cd">
-        <img src="./cd.png" height="300" width="300">
-    </div>
-    <div class="trackListing">
-        <ul>
-            <li>Q.U.E.E.N - Janellé Monae</li>
-            <li>Titanium - David Guetta + Sia</li>
-            <li>Young And Beautiful - Lana Del Ray</li>
-            <li>Bad Kids - The Black Lips</li>
-            <li>Stay - Rihanna</li>
-        </ul>
-    </div>
-</div>
+    <!-- /#wrapper -->
 
+    <!-- jQuery -->
+    <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
 
-<script type="text/javascript">
+    <!-- Bootstrap Core JavaScript -->
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 
- // TODO: decide a good tuning parameter for debounced versions
-var debouncedCircleListener = _.debounce(circleListener, 1000),
-    debouncedSwipeListener = _.debounce(swipeListener, 1000),
-    debouncedProcessSpeech = _.debounce(processSpeech, 500),
-    sound = new Howl({ urls: ['finalProject/sounds/queen.mp3']}),
-    song = "queen";
+    <script type="text/javascript">
+    //****************************************************************/
+    /******** SETTING UP LISTENERS FOR SOUND AND SPEECH **************/
+    /*****************************************************************/
+    // TODO: decide a good tuning parameter for debounced versions
+    var debouncedCircleListener = _.debounce(circleListener, 1000),
+        debouncedSwipeListener = _.debounce(swipeListener, 1000),
+        debouncedProcessSpeech = _.debounce(processSpeech, 500),
+        sound = new Howl({ urls: ['finalProject/sounds/queen.mp3']}),
+        song = "queen";
 
-// SPEECH
-var recognition = new webkitSpeechRecognition();
-recognition.continuous = true;
-recognition.interimResults = true;
-recognition.onresult = function (event) {
-    var transcript = '',
-        hasFinal = false;
+    // SPEECH RECOGNITION LOGIC
+    var recognition = new webkitSpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.onresult = function (event) {
+        var transcript = '',
+            hasFinal = false;
 
-    for (var i = event.resultIndex; i < event.results.length; ++i) {
-        if (event.results[i].isFinal) {
-          hasFinal = true;
-        } else
-          transcript += event.results[i][0].transcript;
+        for (var i = event.resultIndex; i < event.results.length; ++i) {
+            if (event.results[i].isFinal) {
+              hasFinal = true;
+            } else
+              transcript += event.results[i][0].transcript;
+            }
+
+        var processed = debouncedProcessSpeech(transcript, sound);
+
+        if (processed) {
+            recognition.stop();
         }
-
-    var processed = debouncedProcessSpeech(transcript, sound);
-
-    if (processed) {
-        recognition.stop();
     }
-}
 
-recognition.onend = function(event) {
-  setTimeout(function() { recognition.start(); }, 1000);
-};
-recognition.start();
+    recognition.onend = function(event) {
+      setTimeout(function() { recognition.start(); }, 1000);
+    };
 
-var controller = Leap.loop({enableGestures: true}, function(frame){
-  if(frame.valid && frame.gestures.length > 0){
-    frame.gestures.forEach(function(gesture){
-        switch (gesture.type){
-          case "circle":
-            console.log("Circle Gesture");
-            debouncedCircleListener(gesture);
-            break;
-          case "swipe":
-            console.log("Swipe Gesture");
-            debouncedSwipeListener(gesture);
-            break;
-        }
+    recognition.start();
+
+    //****************************************************************/
+    /******** SETTING UP THE LEAP MOTION CALLBACKS *******************/
+    /*****************************************************************/
+    var controller = Leap.loop({enableGestures: true}, function(frame){
+      if(frame.valid && frame.gestures.length > 0){
+        frame.gestures.forEach(function(gesture){
+            switch (gesture.type){
+              case "circle":
+                console.log("Circle Gesture");
+                debouncedCircleListener(gesture);
+                break;
+              case "swipe":
+                console.log("Swipe Gesture");
+                debouncedSwipeListener(gesture);
+                break;
+            }
+        });
+      }
     });
-  }
-});
+    </script>
 
-</script>
+    
+    <script>
+    //****************************************************************/
+    /****************** MENU TOGGLING SCRIPT *************************/
+    /*****************************************************************/
+    $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+    });
+    </script>
+
+
+
 </body>
+
 </html>
