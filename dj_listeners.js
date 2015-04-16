@@ -2,6 +2,16 @@ function volumeLevel (difference) {
     return Math.max(Math.min( (1/500.0) * difference + 0.5, 1), 0);
 }
 
+function updatePlaybar() {
+
+}
+
+function updateVolumeBar (newVolume) {
+    var vol = Math.round(newVolume*100)/100;
+    $(".volume > .progress-bar").css("width", vol + "%");
+    $(".volume > .progress-bar").html(vol + "%");
+}
+
 function swipeListener (gesture) {
     var duration = gesture.duration,
         direction = gesture.direction[2] < 0 ? 1: -1,
@@ -18,6 +28,7 @@ function swipeListener (gesture) {
             console.log("lowering volume", newVolume);
             sound.volume(newVolume);
             sound.pos(pos, id);
+            updateVolumeBar(newVolume)
         });
     } else {
         // TODO: crossfade volume for second disc
