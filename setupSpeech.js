@@ -8,9 +8,8 @@ var processSpeech = function(transcript, sound) {
 
     for (var i = 0; i < commands.length; i++) {
       if(commands[i] !== ""){
-        if (str.indexOf(commands[i]) > -1){
+        if (commands[i].indexOf(str) > -1){
             console.log("transcript", transcript);
-            console.log("FOUND");
             return true;
         }
       }
