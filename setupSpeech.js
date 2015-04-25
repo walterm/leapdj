@@ -18,49 +18,45 @@ var processSpeech = function(transcript, sound) {
   };
     
   var processed = false;
-  if (userSaid("bad", transcript.split(" ")) && userSaid("kids", transcript.split(" "))) {
-      sound = new Howl({
-        urls: ['finalProject/sounds/badKids.mp3']
-      });
-      song = "badKids";
-      processed = true;
-  }
-  else if (userSaid("titanium", transcript.split(" "))) {
-      sound = new Howl({
-        urls: ['finalProject/sounds/titanium.mp3']
-      });
-      song = "titanium";
-      processed = true;
-  }
-  else if (userSaid("Queen", transcript.split(" "))) {
-      sound = new Howl({
-        urls: ['finalProject/sounds/queen.mp3']
-      });
-      song = "queen";
-      processed = true;
-  }
-  else if (userSaid("stay", transcript.split(" "))) {
-      sound = new Howl({
-        urls: ['finalProject/sounds/stay.mp3']
-      });
-      song = "stay";
-      processed = true;
-  }
-  else if (userSaid("young", transcript.split(" ")) && userSaid("and", transcript.split(" ")) && userSaid("beautiful", transcript.split(" "))) {
-      sound = new Howl({
-        urls: ['finalProject/sounds/youngAndBeautiful.mp3']
-      });
-      song = "youngAndBeautiful";
-      processed = true;
-  }
-  else if (userSaid("play", transcript.split(" "))) {
-      if (!isPlaying) {
-        sound.play();
-        isPlaying = true;
+  if(userSaid("play", transcript.split(" "))) {
+    if (!isPlaying) {
+      var cutoff = transcript.split(" ").slice(transcript.indexOf("play") + 1); // this will be empty if play is the last word
+      if(userSaid("queen", cutoff)) {
+        sound = new Howl({
+          urls: ['finalProject/sounds/queen.mp3']
+        });
+        song = "badKids";
+        processed = true;
+      } else if (userSaid("titanium", cutoff)) {
+        sound = new Howl({
+          urls: ['finalProject/sounds/titanium.mp3']
+        });
+        song = "titanium";
+        processed = true;
+      } else if (userSaid("bad", cutoff) && userSaid("kids", cutoff)) {
+        sound = new Howl({
+          urls: ['finalProject/sounds/badKids.mp3']
+        });
+        song = "queen";
+        processed = true;
+      } else if (userSaid("young", cutoff) && userSaid("and", cutoff) && userSaid("beautiful", cutoff)) {
+        sound = new Howl({
+          urls: ['finalProject/sounds/youngAndBeautiful.mp3']
+        });
+        song = "youngAndBeautiful";
+        processed = true;
+      } else if (userSaid("stay", cutoff)) {
+        sound = new Howl({
+          urls: ['finalProject/sounds/stay.mp3']
+        });
+        song = "youngAndBeautiful";
+        processed = true;
       }
-      processed = true;
-  }
-  else if (userSaid("paws", transcript.split(" "))) {
+      console.log(sound);
+      sound.play();
+      isPlaying = true;
+    } 
+  } else if (userSaid("paws", transcript.split(" "))) {
       sound.pause();
       isPlaying = false;
       processed = true;
