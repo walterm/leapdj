@@ -32,7 +32,7 @@ var processSpeech = function(transcript, sound) {
       song = "titanium";
       processed = true;
   }
-  else if (userSaid("queen", transcript.split(" "))) {
+  else if (userSaid("Queen", transcript.split(" "))) {
       sound = new Howl({
         urls: ['finalProject/sounds/queen.mp3']
       });
