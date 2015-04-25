@@ -18,8 +18,7 @@ function updatePlayBar(sound, song) {
 function updateVolumeBar (newVolume) {
     if(newVolume !== undefined){
         var vol = Math.round(newVolume*100)/100;
-        vol *= 100;
-        console.log
+        vol = Math.round(vol*100);
         $(".volume > .progress-bar").css("width", vol + "%");
         $(".volume > .progress-bar").html(vol + "%");
     }
