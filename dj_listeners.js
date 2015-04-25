@@ -2,6 +2,11 @@ function volumeLevel (difference) {
     return Math.max(Math.min( (1/500.0) * difference + 0.5, 1), 0);
 }
 
+function deltaLevel (duration) {
+    delta = (20/100000) * (duration - 100000) + 20;
+    return Math.round(delta);
+}
+
 function updatePlayBar(sound, song) {
     if(sound !== undefined) {
         console.log()
@@ -25,25 +30,18 @@ function updateVolumeBar (newVolume) {
 }
 
 function swipeListener (gesture) {
-    var duration = gesture.duration,
-        direction = gesture.direction[2] < 0 ? 1: -1,
-        isHorizontal, difference;
+    var songLength = getSongLength(song),
+        duration = gesture.duration,
+        orientation = gesture.direction[2] > 0 ? 1 : -1,
+        start = sound.pos(),
+        delta;
 
-    difference = direction * Math.abs(gesture.position[2] - gesture.startPosition[2]);
-
-    isHorizontal = Math.abs(gesture.direction[0]) > Math.abs(gesture.direction[2]);
-    if (!isHorizontal) {
-        var newVolume = volumeLevel(difference),
-            pos = sound.pos();
-        sound.pause();
-        sound.play(function (id) {
-            sound.volume(newVolume);
-            sound.pos(pos, id);
-            updateVolumeBar(newVolume)
-        });
-    } else {
-        // TODO: crossfade volume for second disc
-    }
+    delta = orientation*deltaLevel(duration);
+    console.log(delta);
+    sound.pause();
+    sound.play(function (id) {
+        sound.pos(Math.min(Math.max(start + delta, 0), songLength-1), id);
+    });
 }
 
 // TODO: automate this process
