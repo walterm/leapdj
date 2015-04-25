@@ -1,5 +1,6 @@
-function volumeLevel (difference) {
-    return Math.max(Math.min( (1/500.0) * difference + 0.5, 1), 0);
+function volumeDeltaLevel (velocity) {
+    var slope = (0.5 - 0.01) / (800 - 60);
+    return slope * (velocity - 800) + 0.5;
 }
 
 function deltaLevel (duration) {
@@ -56,17 +57,16 @@ function getSongLength (song) {
     return songMap[song];
 }
 
-function circleListener (gesture) {
-    var songLength = getSongLength(song),
-        progress = gesture.progress,
-        orientation = gesture.normal[1] > 0 ? -1 : 1,
-        start = sound.pos(),
-        delta;
+function changeVolume (volumeDelta) {
+    var pos = sound.pos(),
+        vol = sound.volume();
 
-    // TODO: define this parameter
-    delta = Math.min(progress * 5 * orientation, songLength);
     sound.pause();
     sound.play(function (id) {
-        sound.pos(start + delta, id);
+        var newVolume = Math.min(vol+volumeDelta, 1);
+        newVolume = Math.max(newVolume, 0);
+        sound.volume(newVolume);
+        sound.pos(pos, id);
+        updateVolumeBar(newVolume);
     });
 }

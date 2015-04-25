@@ -89,8 +89,7 @@
     /******** SETTING UP LISTENERS FOR SOUND AND SPEECH **************/
     /*****************************************************************/
     // TODO: decide a good tuning parameter for debounced versions
-    var debouncedCircleListener = _.debounce(circleListener, 1000),
-        debouncedSwipeListener = _.debounce(swipeListener, 1000),
+    var debouncedSwipeListener = _.debounce(swipeListener, 1000),
         debouncedProcessSpeech = _.debounce(processSpeech, 500),
         song, sound;
 
@@ -138,21 +137,27 @@
     //****************************************************************/
     /******** SETTING UP THE LEAP MOTION CALLBACKS *******************/
     /*****************************************************************/
+    var previousFrame = undefined;
     var controller = Leap.loop({enableGestures: true}, function(frame){
-      if(frame.valid && frame.gestures.length > 0){
+      if (frame.valid && frame.gestures.length > 0){
         frame.gestures.forEach(function(gesture){
             switch (gesture.type){
-              // case "circle":
-              //   console.log("Circle Gesture");
-              //   debouncedCircleListener(gesture);
-              //   break;
               case "swipe":
                 console.log("Swipe Gesture");
                 debouncedSwipeListener(gesture);
                 break;
             }
         });
-      }
+      } else if (frame.valid && frame.hands.length > 0) {
+        var hand = frame.hands[0]; // TODO: change this for when we have multiple disks
+        if( Math.abs(hand.palmVelocity[2]) > 20.0) {
+            var volumeDelta = volumeDeltaLevel(Math.abs(hand.palmVelocity[2]));
+            var dir = hand.palmVelocity[2] > 0 ? -1 : 1;
+            volumeDelta *= dir;
+            changeVolume(volumeDelta);
+        }
+        previousFrame = frame;
+      } else { previousFrame = undefined;}
     });
     </script>
 

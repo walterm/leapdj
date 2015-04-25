@@ -52,7 +52,6 @@ var processSpeech = function(transcript, sound) {
         song = "youngAndBeautiful";
         processed = true;
       }
-      console.log(sound);
       sound.play();
       isPlaying = true;
     } 
