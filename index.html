@@ -137,8 +137,9 @@
     //****************************************************************/
     /******** SETTING UP THE LEAP MOTION CALLBACKS *******************/
     /*****************************************************************/
+    var previousFrame = undefined;
     var controller = Leap.loop({enableGestures: true}, function(frame){
-      if (frame.valid && frame.gestures.length > 0){
+      /*if (frame.valid && frame.gestures.length > 0){
         console.log("valid");
         frame.gestures.forEach(function(gesture){
             switch (gesture.type){
@@ -159,27 +160,17 @@
                 break;
             }
         });
-      } /*else if (frame.valid && frame.hands.length > 0) {
+      } else */if (frame.valid && frame.hands.length > 0) {
         _.each(frame.hands, function(hand){
-            if(hand.type === "left"){
-                if( Math.abs(hand.palmVelocity[2]) > 20.0 && sound !== undefined) {
-                    console.log("adjusting left");
-                    var volumeDelta = volumeDeltaLevel(Math.abs(hand.palmVelocity[2]));
-                    var dir = hand.palmVelocity[2] > 0 ? -1 : 1;
-                    volumeDelta *= dir;
-                    changeVolume(volumeDelta, sound);
-                }
-            } else if (hand.type === "right") {
-                if( Math.abs(hand.palmVelocity[2]) > 20.0 && sound2 !== undefined) {
-                    var volumeDelta = volumeDeltaLevel(Math.abs(hand.palmVelocity[2]));
-                    var dir = hand.palmVelocity[2] > 0 ? -1 : 1;
-                    volumeDelta *= dir;
-                    changeVolume(volumeDelta, sound2);
-                }
+            var direction = Math.abs(hand.palmVelocity[2]) > Math.abs(hand.palmVelocity[0]) ? "z" : "x";
+            if(direction === "x") {
+                console.log(hand.palmPosition);
+                crossfadeListener(hand, sound, sound2);
+            }else {
+                volumeListener(hand);
             }
-            
         });
-      }*/
+      }
     });
     </script>
 

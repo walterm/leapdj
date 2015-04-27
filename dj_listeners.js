@@ -3,6 +3,11 @@ function volumeDeltaLevel (velocity) {
     return slope * (velocity - 800) + 0.5;
 }
 
+function crossfadeLevel (position) {
+    var slope = (-1) / (300.0);
+    return slope * (position + 150) + 1;
+}
+
 function deltaLevel (duration) {
     delta = (20/100000) * (duration - 100000) + 20;
     return Math.round(delta);
@@ -55,6 +60,45 @@ function getSongLength (song) {
         "youngAndBeautiful": 256
     };
     return songMap[song];
+}
+
+function volumeListener(hand) {
+    if(hand.type === "left"){
+        if( Math.abs(hand.palmVelocity[2]) > 20.0 && sound !== undefined) {
+            console.log("adjusting left");
+            var volumeDelta = volumeDeltaLevel(Math.abs(hand.palmVelocity[2]));
+            var dir = hand.palmVelocity[2] > 0 ? -1 : 1;
+            volumeDelta *= dir;
+            changeVolume(volumeDelta, sound);
+        }
+    } else if (hand.type === "right") {
+        if( Math.abs(hand.palmVelocity[2]) > 20.0 && sound2 !== undefined) {
+            var volumeDelta = volumeDeltaLevel(Math.abs(hand.palmVelocity[2]));
+            var dir = hand.palmVelocity[2] > 0 ? -1 : 1;
+            volumeDelta *= dir;
+            changeVolume(volumeDelta, sound2);
+        }
+    }
+}
+
+function crossfadeListener(hand, sound, sound2) {
+    var position = hand.palmPosition[0];
+    position = Math.max(-150, position);
+    position = Math.min(150, position);
+    var pos1 = sound.pos(),
+        pos2 = sound2.pos();
+
+    sound.pause();
+    sound.play(function (id) {
+        sound.volume(crossfadeLevel(position));
+        sound.pos(pos1, id);
+    });
+
+    sound2.pause();
+    sound2.play(function (id) {
+        sound2.volume(1.0 - crossfadeLevel(position));
+        sound2.pos(pos2, id);
+    });
 }
 
 function changeVolume (volumeDelta, sound) {
