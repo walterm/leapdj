@@ -25,6 +25,10 @@ var processSpeech = function(transcript, sound) {
     return userSaid("a", array);
   };
 
+  var disc = function (array) {
+    return userSaid("disc", array) || userSaid("disk", array) || userSaid("discs", array);
+  }
+
   var userSaidDisc = function(array) {
     if (discA(array)) {
       return "A"
@@ -40,68 +44,72 @@ var processSpeech = function(transcript, sound) {
       var cutoff = transcript.split(" ").slice(transcript.indexOf("play") + 1); // this will be empty if play is the last word
 
       if(userSaid("queen", cutoff) || userSaid("Queen", cutoff)) {
-        if(userSaid("disc", cutoff) && userSaid("a", cutoff)) {
+        if(disc(cutoff) && userSaid("a", cutoff)) {
           sound = new Howl({
             urls: ['finalProject/sounds/queen.mp3']
           });
-        } else if (userSaid("disc", cutoff) && discB(cutoff)) {
+          song = "queen";
+        } else if (disc(cutoff) && discB(cutoff)) {
           sound2 = new Howl({
             urls: ['finalProject/sounds/queen.mp3']
           });
+          song2 = "queen";
         }
 
-        song = "queen";
+        
         processed = true;
       } else if (userSaid("titanium", cutoff)) {
 
-        if(userSaid("disc", cutoff) && userSaid("a", cutoff)) {
-          console.log("why am I here");
+        if(disc(cutoff) && userSaid("a", cutoff)) {
           sound = new Howl({
             urls: ['finalProject/sounds/titanium.mp3']
           });
-        } else if (userSaid("disc", cutoff) && discB(cutoff)) {
-          console.log("DISC B SELECTION");
+          song = "titanium";
+        } else if (disc(cutoff) && discB(cutoff)) {
           sound2 = new Howl({
             urls: ['finalProject/sounds/titanium.mp3']
           });
+          song2 = "titanium";
         }
-        song = "titanium";
-        processed = true;
-      } else if (userSaid("bad", cutoff) && userSaid("kids", cutoff)) {
-        if(userSaid("disc", cutoff) && userSaid("a", cutoff)) {
+         processed = true;
+      } else if (disc(cutoff) && userSaid("kids", cutoff)) {
+        if(disc(cutoff) && userSaid("a", cutoff)) {
           sound = new Howl({
             urls: ['finalProject/sounds/badKids.mp3']
           });
-        } else if (userSaid("disc", cutoff) && discB(cutoff)) {
+          song = "badKids";
+        } else if (disc(cutoff) && discB(cutoff)) {
           sound2 = new Howl({
             urls: ['finalProject/sounds/badKids.mp3']
           });
         }
-        song = "badKids";
+        song2 = "badKids";
         processed = true;
       } else if (userSaid("young", cutoff) && userSaid("and", cutoff) && userSaid("beautiful", cutoff)) {
-        if(userSaid("disc", cutoff) && userSaid("a", cutoff)) {
+        if(disc(cutoff) && userSaid("a", cutoff)) {
           sound = new Howl({
             urls: ['finalProject/sounds/youngAndBeautiful.mp3']
           });
-        } else if (userSaid("disc", cutoff) && discB(cutoff)) {
+          song = "youngAndBeautiful";
+        } else if (disc(cutoff) && discB(cutoff)) {
           sound2 = new Howl({
             urls: ['finalProject/sounds/youngAndBeautiful.mp3']
           });
+          song2 = "youngAndBeautiful";
         }
-        song = "youngAndBeautiful";
         processed = true;
       } else if (userSaid("stay", cutoff)) {
-        if(userSaid("disc", cutoff) && userSaid("a", cutoff)) {
+        if(disc(cutoff) && userSaid("a", cutoff)) {
           sound = new Howl({
             urls: ['finalProject/sounds/stay.mp3']
           });
-        } else if (userSaid("disc", cutoff) && discB(cutoff)) {
+          song = "stay";
+        } else if (disc(cutoff) && discB(cutoff)) {
           sound2 = new Howl({
             urls: ['finalProject/sounds/stay.mp3']
           });
+          song2 = "stay";
         }
-        song = "stay";
         processed = true;
       } else if(userSaidDisc(cutoff) !== undefined) {
         var result = userSaidDisc(cutoff);
@@ -109,14 +117,14 @@ var processSpeech = function(transcript, sound) {
       }
 
 
-    if(userSaid("disc", cutoff) && userSaid("a", cutoff)) {
+    if(disc(cutoff) && userSaid("a", cutoff)) {
       if(soundPlaybackId1 !== undefined){
         soundPlaybackId1.stop();
       }
         
       soundPlaybackId1 = sound.play();
       console.log(soundPlaybackId1);
-    } else if (userSaid("disc", cutoff) && discB(cutoff)) {  
+    } else if (disc(cutoff) && discB(cutoff)) {  
       if(soundPlaybackId2 !== undefined){
         soundPlaybackId2.stop();
       }

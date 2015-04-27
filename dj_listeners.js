@@ -30,7 +30,7 @@ function updateVolumeBar (newVolume) {
     }
 }
 
-function swipeListener (gesture) {
+function swipeListener (gesture, sound, song) {
     var songLength = getSongLength(song),
         duration = gesture.duration,
         orientation = gesture.direction[2] > 0 ? 1 : -1,

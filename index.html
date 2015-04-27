@@ -91,7 +91,7 @@
     // TODO: decide a good tuning parameter for debounced versions
     var debouncedSwipeListener = _.debounce(swipeListener, 1000),
         debouncedProcessSpeech = _.debounce(processSpeech, 500),
-        song, sound, sound2, soundPlaybackId1, soundPlaybackId2, pos1, pos2;
+        song, song2, sound, sound2, soundPlaybackId1, soundPlaybackId2, pos1, pos2;
 
     setInterval(function() {
         updatePlayBar(sound, song);
@@ -139,15 +139,27 @@
     /*****************************************************************/
     var controller = Leap.loop({enableGestures: true}, function(frame){
       if (frame.valid && frame.gestures.length > 0){
+        console.log("valid");
         frame.gestures.forEach(function(gesture){
             switch (gesture.type){
               case "swipe":
                 console.log("Swipe Gesture");
-                debouncedSwipeListener(gesture);
+                console.log(frame);
+                if(frame.hands.length > 0) {
+                    _.each(frame.hands, function(hand){
+                        console.log(hand);
+                        console.log("sound", sound);
+                        if (hand.type === "left") {
+                            debouncedSwipeListener(gesture, sound, song)
+                        } else {
+                            debouncedSwipeListener(gesture, sound2, song2);
+                        }
+                    });
+                }
                 break;
             }
         });
-      } else if (frame.valid && frame.hands.length > 0) {
+      } /*else if (frame.valid && frame.hands.length > 0) {
         _.each(frame.hands, function(hand){
             if(hand.type === "left"){
                 if( Math.abs(hand.palmVelocity[2]) > 20.0 && sound !== undefined) {
@@ -167,7 +179,7 @@
             }
             
         });
-      }
+      }*/
     });
     </script>
 
