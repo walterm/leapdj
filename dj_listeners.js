@@ -57,7 +57,7 @@ function getSongLength (song) {
     return songMap[song];
 }
 
-function changeVolume (volumeDelta) {
+function changeVolume (volumeDelta, sound) {
     var pos = sound.pos(),
         vol = sound.volume();
 
@@ -67,6 +67,7 @@ function changeVolume (volumeDelta) {
         newVolume = Math.max(newVolume, 0);
         sound.volume(newVolume);
         sound.pos(pos, id);
-        updateVolumeBar(newVolume);
+        //updateVolumeBar(newVolume);
+        console.log("newVolume", sound.volume());
     });
 }
