@@ -3,7 +3,7 @@
 
 <head>
     <title>Virtual DJ</title>
-    <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script src="./jquery-1.11.2.min.js"></script>
     <script src="./js/knob.js"></script>
     <!-- Bootstrap Core CSS -->
     <link href="./css/bootstrap.min.css" rel="stylesheet">
@@ -165,11 +165,8 @@
             switch (gesture.type){
               case "swipe":
                 console.log("Swipe Gesture");
-                console.log(frame);
                 if(frame.hands.length > 0) {
                     _.each(frame.hands, function(hand){
-                        console.log(hand);
-                        console.log("sound", sound);
                         if (hand.type === "left") {
                             debouncedSwipeListener(gesture, sound, song)
                         } else {

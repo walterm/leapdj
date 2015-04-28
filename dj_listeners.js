@@ -101,17 +101,17 @@ function crossfadeListener(hand, sound, sound2) {
     }
 }
 
-function changeVolume (volumeDelta, sound) {
-    var pos = sound.pos(),
-        vol = sound.volume();
+function changeVolume (volumeDelta, soundObj) {
+    var pos = soundObj.pos(),
+        vol = soundObj.volume();
 
-    sound.pause();
-    sound.play(function (id) {
+    soundObj.pause();
+    soundObj.play(function (id) {
         var newVolume = Math.min(vol+volumeDelta, 1);
         newVolume = Math.max(newVolume, 0);
-        sound.volume(newVolume);
-        sound.pos(pos, id);
+        soundObj.volume(newVolume);
+        soundObj.pos(pos, id);
         //updateVolumeBar(newVolume);
-        console.log("newVolume", sound.volume());
+        console.log("newVolume", soundObj.volume());
     });
 }

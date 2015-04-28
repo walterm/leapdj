@@ -113,7 +113,13 @@ var processSpeech = function(transcript, sound) {
         processed = true;
       } else if(userSaidDisc(cutoff) !== undefined) {
         var result = userSaidDisc(cutoff);
-        result === "A" ? sound.play(pos1) : sound2.play(pos2);
+        console.log(pos1, pos2);
+        if(result === "A") {
+          soundPlaybackId1 = sound.play(Math.round(pos1));
+        } else {
+          soundPlaybackId2 = sound2.play(Math.round(pos2));
+        }
+        processed = true;
       }
 
 
