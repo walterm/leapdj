@@ -1,0 +1,62 @@
+.progress.vertical {
+    position: relative;
+    width: 35px;
+    min-height: 240px;
+    float: left;
+    margin-right: 20px;
+    background: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    border: none;
+}
+
+.selected-A {
+    border: 5px solid #d9534f;
+}
+
+.selected-B {
+    border: 5px solid #5cb85c;
+}
+
+.progress.vertical {
+    position: relative;
+    width: 35px;
+    min-height: 240px;
+    float: left;
+    margin-right: 20px;
+    background: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    border: none;
+}
+
+.selected-A {
+    border: 5px solid #d9534f;
+}
+
+.selected-B {
+    border: 5px solid #5cb85c;
+}
+
+.a {
+    color: #d9534f;
+}
+
+.b {
+    color: #5cb85c;
+}
+
+.icon-selected-a {
+    text-shadow: 0 0 30px #d9534f
+}
+
+.icon-selected-b {
+    text-shadow: 0 0 30px #5cb85c;
+}
+
+.glyphicon {
+    font-size: 8em;
+}
+
