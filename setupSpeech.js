@@ -123,14 +123,18 @@ var processSpeech = function(transcript, sound) {
       }
         
       soundPlaybackId1 = sound.play();
-      console.log(soundPlaybackId1);
+      highlightSelectedSong("selected-A", song);
+      highlightIcon("icon-selected-a", "play-a");
+      initKnob(".dial1", sound, song);
     } else if (disc(cutoff) && discB(cutoff)) {  
       if(soundPlaybackId2 !== undefined){
         soundPlaybackId2.stop();
       }
       
       soundPlaybackId2 = sound2.play();
-      console.log("disc B");
+      highlightSelectedSong("selected-B", song2);
+      highlightIcon("icon-selected-b", "play-b");
+      initKnob(".dial2", sound2, song2);
     }
      
   } else if (userSaid("paws", transcript.split(" "))) {
@@ -139,9 +143,11 @@ var processSpeech = function(transcript, sound) {
       if(result === "A") {
         pos1 = sound.pos();
         sound.pause();
+        highlightIcon("icon-selected-a", "pause-a");
       } else {
         pos2 = sound2.pos();
         sound2.pause();
+        highlightIcon("icon-selected-b", "pause-b");
       }
       processed = true;
     }
@@ -150,7 +156,15 @@ var processSpeech = function(transcript, sound) {
   else if (userSaid("stop", transcript.split(" "))) {
     var result = userSaidDisc(transcript.split(" "));
     if(result !== undefined) {
-      result === "A"? sound.stop() : sound2.stop();
+      if(result === "A") {
+        sound.stop();
+        highlightIcon("icon-selected-a", "stop-a");
+        soundPlaybackId1 = undefined;
+      } else {
+        sound2.stop();
+        highlightIcon("icon-selected-b", "stop-b");
+        soundPlaybackId2 = undefined;
+      }
       processed = true;
     }
   }

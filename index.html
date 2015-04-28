@@ -3,18 +3,22 @@
 
 <head>
     <title>Virtual DJ</title>
-
+    <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script src="./js/knob.js"></script>
     <!-- Bootstrap Core CSS -->
-    <link href="./bootstrap.min.css" rel="stylesheet">
+    <link href="./css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom CSS -->
-    <link href="./simple-sidebar.css" rel="stylesheet">
+    <link href="./css/simple-sidebar.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="./css/style.css">
     <script src="./leap-0.6.4.js"></script>
     <script src="./leap-plugins-0.1.10.js"></script>
     <script src="./howler.js"></script>
     <script src="./underscore-min.js"></script>
     <script src="./setupSpeech.js"></script>
+    <script src="./ui.js"></script>
     <script src="./dj_listeners.js"></script>
+    
 </head>
 
 <body>
@@ -30,19 +34,19 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#">Bad Kids - The Black Lips</a>
+                    <a id="badKids">Bad Kids - The Black Lips</a>
                 </li>
                 <li>
-                    <a href="#">Q.U.E.E.N. - Janellé Monae</a>
+                    <a id="queen">Q.U.E.E.N. - Janellé Monae</a>
                 </li>
                 <li>
-                    <a href="#">Young and Beautiful - Lana Del Ray</a>
+                    <a id="youngAndBeautiful">Young and Beautiful - Lana Del Ray</a>
                 </li>
                 <li>
-                    <a href="#">Stay - Rihanna</a>
+                    <a id="stay">Stay - Rihanna</a>
                 </li>
                 <li>
-                    <a href="#">Titanium - David Guetta & Sia</a>
+                    <a id="titanium">Titanium - David Guetta & Sia</a>
                 </li>
             </ul>
         </div>
@@ -54,21 +58,33 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <h1>Virtual DJ</h1>
-                        <p>Current song: <span class="song"></span></p>
                         
-                        <div class="progress">
-                            <div class="progress-bar seek" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
-                                <span class="sr-only">60% Complete</span>
+                        
+                        <div class="progress vertical volume">
+                            <div class="progress-bar progress-bar-danger vol1" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
+                            100%
                             </div>
+                            
                         </div>
+                        <span id="play-a" class="glyphicon glyphicon-play a"></span>
+                        <span id="pause-a" class="glyphicon glyphicon-pause a"></span>
+                        <span id="stop-a" class="glyphicon glyphicon-stop a icon-selected-a"></span>
+                            
+                        <div class="progress vertical volume">
+                          <div class="progress-bar progress-bar-success vol2" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: 100%">
+                            100%
+                          </div>
+                        </div>
+                        <br/>
+                        <span id="play-b" class="glyphicon glyphicon-play b"></span>
+                        <span id="pause-b" class="glyphicon glyphicon-pause b"></span>
+                        <span id="stop-b" class="glyphicon glyphicon-stop b icon-selected-b"></span>
 
-                        <div class="progress volume">
-  <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: 100%">
-    100%
-  </div>
-</div>
+                        <input type="text" value="0" class="dial1 sr-only" >
 
-                        <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">Toggle Menu</a>
+                        <input type="text" value="0" class="dial2 sr-only">
+
+
                     </div>
                 </div>
             </div>
@@ -77,9 +93,6 @@
 
     </div>
     <!-- /#wrapper -->
-
-    <!-- jQuery -->
-    <script src="./jquery-1.11.2.min.js"></script>
 
     <!-- Bootstrap Core JavaScript -->
     <script src="./bootstrap.min.js"></script>
@@ -94,8 +107,15 @@
         song, song2, sound, sound2, soundPlaybackId1, soundPlaybackId2, pos1, pos2;
 
     setInterval(function() {
-        updatePlayBar(sound, song);
+        if(soundPlaybackId1 !== undefined) {
+            updateKnob(".dial1", sound, song);
+        }
+
+        if(soundPlaybackId2 !== undefined) {
+            updateKnob(".dial2", sound2, song2);
+        }
     }, 1000);
+
 
     // SPEECH RECOGNITION LOGIC
     var recognition = new webkitSpeechRecognition();
@@ -139,7 +159,7 @@
     /*****************************************************************/
     var previousFrame = undefined;
     var controller = Leap.loop({enableGestures: true}, function(frame){
-      /*if (frame.valid && frame.gestures.length > 0){
+      if (frame.valid && frame.gestures.length > 0){
         console.log("valid");
         frame.gestures.forEach(function(gesture){
             switch (gesture.type){
@@ -160,15 +180,20 @@
                 break;
             }
         });
-      } else */if (frame.valid && frame.hands.length > 0) {
+      } else if (frame.valid && frame.hands.length > 0) {
         _.each(frame.hands, function(hand){
-            var direction = Math.abs(hand.palmVelocity[2]) > Math.abs(hand.palmVelocity[0]) ? "z" : "x";
-            if(direction === "x") {
-                console.log(hand.palmPosition);
-                crossfadeListener(hand, sound, sound2);
-            }else {
-                volumeListener(hand);
+            if(previousFrame !== undefined && hand.grabStrength > 0.9){
+                var translation = frame.translation(previousFrame);
+                var direction = Math.abs(translation[2]) > Math.abs(translation[0]) ? "z" : "x";
+                console.log(translation);
+                console.log(direction);
+                if(direction === "x") {
+                    crossfadeListener(hand, sound, sound2);
+                }else {
+                    volumeListener(hand);
+                }
             }
+            previousFrame = frame;
         });
       }
     });

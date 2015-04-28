@@ -26,15 +26,6 @@ function updatePlayBar(sound, song) {
     }
 }
 
-function updateVolumeBar (newVolume) {
-    if(newVolume !== undefined){
-        var vol = Math.round(newVolume*100)/100;
-        vol = Math.round(vol*100);
-        $(".volume > .progress-bar").css("width", vol + "%");
-        $(".volume > .progress-bar").html(vol + "%");
-    }
-}
-
 function swipeListener (gesture, sound, song) {
     var songLength = getSongLength(song),
         duration = gesture.duration,
@@ -70,6 +61,7 @@ function volumeListener(hand) {
             var dir = hand.palmVelocity[2] > 0 ? -1 : 1;
             volumeDelta *= dir;
             changeVolume(volumeDelta, sound);
+            updateVolumeBar("vol1", sound.volume());
         }
     } else if (hand.type === "right") {
         if( Math.abs(hand.palmVelocity[2]) > 20.0 && sound2 !== undefined) {
@@ -77,28 +69,36 @@ function volumeListener(hand) {
             var dir = hand.palmVelocity[2] > 0 ? -1 : 1;
             volumeDelta *= dir;
             changeVolume(volumeDelta, sound2);
+            updateVolumeBar("vol2", sound2.volume());
         }
     }
 }
 
 function crossfadeListener(hand, sound, sound2) {
-    var position = hand.palmPosition[0];
-    position = Math.max(-150, position);
-    position = Math.min(150, position);
-    var pos1 = sound.pos(),
-        pos2 = sound2.pos();
+    if(soundPlaybackId1 !== undefined && soundPlaybackId2 !== undefined) {
+        console.log(soundPlaybackId1, sound);
+        console.log(soundPlaybackId2, sound2);
+        var position = hand.palmPosition[0];
+        position = Math.max(-150, position);
+        position = Math.min(150, position);
+        var pos1 = sound.pos(),
+            pos2 = sound2.pos();
 
-    sound.pause();
-    sound.play(function (id) {
-        sound.volume(crossfadeLevel(position));
-        sound.pos(pos1, id);
-    });
+        sound.pause();
+        sound.play(function (id) {
+            sound.volume(crossfadeLevel(position));
+            sound.pos(pos1, id);
+        });
 
-    sound2.pause();
-    sound2.play(function (id) {
-        sound2.volume(1.0 - crossfadeLevel(position));
-        sound2.pos(pos2, id);
-    });
+        sound2.pause();
+        sound2.play(function (id) {
+            sound2.volume(1.0 - crossfadeLevel(position));
+            sound2.pos(pos2, id);
+        });
+
+        updateVolumeBar("vol1", sound.volume());
+        updateVolumeBar("vol2", sound2.volume());
+    }
 }
 
 function changeVolume (volumeDelta, sound) {
